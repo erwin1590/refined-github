@@ -1,7 +1,7 @@
 import select from 'select-dom';
 import onetime from 'onetime';
 import stripIndent from 'strip-indent';
-import {isRepo, isPR, isIssue} from './page-detect';
+import {isRepo, isPR, isIssue, isEnterprise} from './page-detect';
 
 export function logError(featureName: typeof __featureName__, error: Error | string, ...extras: unknown[]): void {
 	const message = typeof error === 'string' ? error : error.message;
@@ -18,6 +18,14 @@ export function logError(featureName: typeof __featureName__, error: Error | str
 }
 
 export const getUsername = onetime(() => select('meta[name="user-login"]')!.getAttribute('content')!);
+
+export const getUsernameForFilters = (): string => {
+	if (isEnterprise()) {
+		return getUsername();
+	}
+
+	return '@me';
+};
 
 export const getDiscussionNumber = (): string | undefined => {
 	if (isPR() || isIssue()) {
