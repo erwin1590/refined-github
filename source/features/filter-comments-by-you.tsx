@@ -1,21 +1,38 @@
 import React from 'dom-chef';
 import select from 'select-dom';
 import features from '../libs/features';
-import {getRepoURL} from '../libs/utils';
+import {getUsername, getRepoURL} from '../libs/utils';
+import {isEnterprise} from '../libs/page-detect';
 
 const repoUrl = getRepoURL();
 
 function init(): void {
-	select('.subnav-search-context .SelectMenu-list a:last-child')!
-		.before(
-			<a
-				href={`/${repoUrl}/issues?q=is%3Aopen+commenter:@me`}
-				className="SelectMenu-item"
-				role="menuitem"
-			>
-				Everything commented by you
-			</a>
-		);
+	if (isEnterprise()) {
+		select('.subnav-search-context details-menu li:last-child')!
+			.before(
+				<li>
+					<a
+						href={`/${repoUrl}/issues?q=is%3Aopen+commenter:${getUsername()}`}
+						className="select-menu-item"
+						role="menuitem"
+					>
+						Everything commented by you
+					</a>
+
+				</li>
+			);
+	} else {
+		select('.subnav-search-context .SelectMenu-list a:last-child')!
+			.before(
+				<a
+					href={`/${repoUrl}/issues?q=is%3Aopen+commenter:@me`}
+					className="SelectMenu-item"
+					role="menuitem"
+				>
+					Everything commented by you
+				</a>
+			);
+	}
 }
 
 features.add({
